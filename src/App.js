@@ -24,18 +24,36 @@ class App extends Component {
     
     this.setRandomWisdom = this.setRandomWisdom.bind(this);
     this.addWisdom = this.addWisdom.bind(this);
+    
+    this.websocket = new WebSocket('ws://' + window.location.host + '/comm');
+    this.websocket.onmessage = this.handleMessage.bind(this);
+    // this.websocket.open();
+  }
+  
+  handleMessage(event) {
+    var msg = JSON.parse(event.data);
+    wisdoms.push(msg.wisdom);
+    this.setWisdom(wisdoms.length-1);
   }
   
   setRandomWisdom() {
     var index = Math.floor(Math.random() * wisdoms.length);
     
-    this.setState({
-      wisdom: wisdoms[index]
+    this.setWisdom(index);
+  }
+  
+  setWisdom(index) {
+    this.setState(function(state) { 
+      return {
+        wisdom: wisdoms[index]
+      }
     });
   }
   
   addWisdom() {
-    wisdoms.push(prompt("What new wisdom do you offer?"));
+    let wisdom = prompt("What new wisdom do you offer?");
+    
+    this.websocket.send(JSON.stringify({type: "broadcast", wisdom: wisdom}));
   }
   
   removeCurrentWisdom() {
@@ -48,6 +66,7 @@ class App extends Component {
       <div className="App">
         {this.state.wisdom}
         <button className="more" onClick={this.setRandomWisdom}>Another</button>
+        <button className="new-wisdom" onClick={this.addWisdom}>New</button>
       </div>
     );
   }
