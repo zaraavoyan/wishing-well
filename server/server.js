@@ -56,7 +56,7 @@ let wsServer = new WebSocketServer({
   httpServer: server
 })
 wsServer.on('request', (request) => {
-  console.log("connection!");
+  console.log(":: new connection");
   var connection = request.accept(null, request.origin);
   allConnections.add(connection);
     
@@ -65,7 +65,7 @@ wsServer.on('request', (request) => {
       return;
     }
     msg = msg.utf8Data;
-    console.log("got message!", msg);
+    console.log(":: message:", msg);
     
     let data = JSON.parse(msg);
     
@@ -75,6 +75,7 @@ wsServer.on('request', (request) => {
   });
   
   connection.on('close', (conn) => {
+    console.log(":: connection closed");
     allConnections.delete(conn);
   });
 });

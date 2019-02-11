@@ -11,6 +11,16 @@ var wisdoms = [
   "Every cloud engenders not a storm."
 ]
 
+var authors = [
+  "Anonymous",
+  "Anonymous",
+  "Anonymous",
+  "Anonymous",
+  "Anonymous",
+  "Anonymous",
+  "Anonymous"
+]
+
 
 class App extends Component {
   constructor(props) {
@@ -41,10 +51,14 @@ class App extends Component {
   
   handleMessage(event) {
     // get the actual message data
-    var msg = JSON.parse(event.data);
+    var message = JSON.parse(event.data);
     
-    // make a new wisdom from the wisdom property
-    wisdoms.push(msg.wisdom);
+    // add a new wisdom to the array, using the message's wisdom property
+    var wisdom = message.wisdom;
+    // modify wisdom somehow before pushing?
+    wisdoms.push(wisdom);
+    
+    // show the last wisdom
     this.setWisdom(wisdoms.length-1);
   }
   
@@ -62,15 +76,38 @@ class App extends Component {
   }
   
   addWisdom() {
+    // ask for wisdom
     var wisdom = prompt("What new wisdom do you offer?");
     
+    // if there's no name set, ask for name
+    if (! this.state.name) {
+      this.setState({
+        name: prompt("What is your name?")
+      });
+    }
+    
     // make a message object
-    var msg = {type: "broadcast", wisdom: wisdom};
+    var message = {
+      type: "broadcast", 
+      wisdom: wisdom
+    };
     
     // send it as a string to all other browsers
-    this.websocket.send(JSON.stringify(msg));
+    this.websocket.send(JSON.stringify(message));
   }
   
+  lastListItems(count = 5) {
+    // wrap last five wisdoms + authors each in a <li> element
+    var lastFiveAuthors = authors.slice(authors.length-count);
+    var lastFiveWisdoms = wisdoms.slice(wisdoms.length-count);
+    
+    return lastFiveWisdoms.map((wisdom, index) => 
+      <li>
+        <span className="wisdom">{wisdom}</span>
+        <span className="author">{lastFiveAuthors[index]}</span>
+      </li>);
+  }
+    
   removeCurrentWisdom() {
     var index = wisdoms.indexOf(this.state.wisdom);
     wisdoms.splice(index, 1);
