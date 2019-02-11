@@ -25,13 +25,25 @@ class App extends Component {
     this.setRandomWisdom = this.setRandomWisdom.bind(this);
     this.addWisdom = this.addWisdom.bind(this);
     
+    this.connectWebsocket();
+  }
+  
+  connectWebsocket() {
+    if (this.websocket) {
+      this.websocket.close();
+      delete this.websocket;
+    }
+
     this.websocket = new WebSocket('ws://' + window.location.host + '/comm');
     this.websocket.onmessage = this.handleMessage.bind(this);
-    // this.websocket.open();
+    this.websocket.onclose = () => setTimeout(() => this.connectWebsocket(), 500);
   }
   
   handleMessage(event) {
+    // get the actual message data
     var msg = JSON.parse(event.data);
+    
+    // make a new wisdom from the wisdom property
     wisdoms.push(msg.wisdom);
     this.setWisdom(wisdoms.length-1);
   }
@@ -43,17 +55,20 @@ class App extends Component {
   }
   
   setWisdom(index) {
-    this.setState(function(state) { 
-      return {
-        wisdom: wisdoms[index]
-      }
+    // set wisdom based on an index
+    this.setState({
+      wisdom: wisdoms[index]
     });
   }
   
   addWisdom() {
-    let wisdom = prompt("What new wisdom do you offer?");
+    var wisdom = prompt("What new wisdom do you offer?");
     
-    this.websocket.send(JSON.stringify({type: "broadcast", wisdom: wisdom}));
+    // make a message object
+    var msg = {type: "broadcast", wisdom: wisdom};
+    
+    // send it as a string to all other browsers
+    this.websocket.send(JSON.stringify(msg));
   }
   
   removeCurrentWisdom() {
