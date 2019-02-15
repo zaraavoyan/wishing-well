@@ -29,7 +29,7 @@
 
 .new-wisdom {
   position: fixed;
-  bottom: 20px;
+  bottom: 30px;
   right: 20px;
   background: green;
   padding: 8px 10px;
@@ -41,4 +41,13 @@
   transition: background 0.2s;
   cursor: pointer;
   display: block;
+}
+
+
+.author {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
 }

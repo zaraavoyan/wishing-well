@@ -56,10 +56,11 @@ class App extends Component {
 
     // add a new wisdom to the array, using the message's wisdom property
     var wisdom = message.wisdom;
-      wisdom = wisdom.replace("storm", "⛈️");
+    var author = message.author;
+    wisdom = wisdom.replace("hello", "⛈️");
     // modify wisdom somehow before pushing?
     wisdoms.push(wisdom);
-    authors.push(this.name);
+    authors.push(author);
 
     // show the last wisdom
     this.setWisdom(wisdoms.length-1);
@@ -86,11 +87,12 @@ class App extends Component {
     // ask for wisdom
     var wisdom = prompt("What new wisdom do you offer?");
 
-    // if there's no name set, ask for name
     if (! this.state.name) {
-      this.setState({
-        name: prompt("What is your name?")
-      });
+      var author = prompt("What is your name?");
+        this.setState({
+          name: author,
+        })
+
     }
 
     // make a message object
@@ -127,7 +129,7 @@ class App extends Component {
         {this.state.wisdom}
         <button className="more" onClick={this.setRandomWisdom}>Another</button>
         <button className="new-wisdom" onClick={this.addWisdom}>New</button>
-        {this.state.author}
+    <span className="author">  <i>  -{this.state.author}</i>  </span>
       </div>
     );
   }
